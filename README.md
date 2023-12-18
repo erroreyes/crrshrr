@@ -6,7 +6,7 @@
 
 While the bit depth and (sample) rate parameters do what may be expected to, the random and random rate parameters add a bit of a distinctive flavor to it.  
 
-This was created as a way to play around with Rust, nih-plugs, and just audio effects in general. 
+This was created as a way to play around with Rust, [nih-plug](https://github.com/robbert-vdh/nih-plug), and audio effects development in general. 
 
 ## Building
 
