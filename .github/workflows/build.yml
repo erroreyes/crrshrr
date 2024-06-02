@@ -8,7 +8,7 @@ on:
       - '*'
   pull_request:
     branches:
-      - master
+      - main
 
 defaults:
   run:
@@ -102,22 +102,17 @@ jobs:
         run: cp ".github/workflows/readme-${{ runner.os }}.txt" "$ARCHIVE_NAME/$ARCHIVE_NAME/README.txt"
       - uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.ARCHIVE_NAME }}
-          path: ${{ env.ARCHIVE_NAME }}
+          name: ${{ env.ARCHIVE_NAME }}.zip
+          path: ${{ env.ARCHIVE_NAME }}.zip
           
   publish:
     name: Publish
-    # if: ${{ github.ref == 'refs/heads/main' && github.repository_owner == 'erroreyes' }}
-    if: ${{ github.repository_owner == 'erroreyes' }}
+    if: contains(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
     needs: [package]
     steps:
-      - uses: actions/download-artifact@v4
-        with:
-          path: artifacts
-      - name: Show Installer Directory
-        run: |
-          ls -R artifacts
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
       - name: Delete old release assets
         uses: mknejp/delete-release-assets@v1
         with:
@@ -127,13 +122,7 @@ jobs:
       - name: Upload release assets
         uses: svenstaro/upload-release-action@v2
         with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: artifacts/*
-          tag: alpha
-          file_glob: true
-      - name: Tag Repo
-        uses: richardsimko/update-tag@v1.0.7
-        with:
+          prerelease: true
+          file: */*.zip
           tag_name: alpha
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
