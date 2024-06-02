@@ -125,4 +125,5 @@ jobs:
           # tag_name: alpha
           # token: ${{ secrets.GITHUB_TOKEN }}
           prerelease: true
-          files: */*.zip
+          files: |
+            */*.zip
