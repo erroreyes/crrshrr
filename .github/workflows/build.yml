@@ -96,7 +96,7 @@ jobs:
         run: |
           cd target/bundled/
           cp "../../.github/workflows/readme-${{ runner.os }}.txt" "./README.txt"
-          zip -r "$ARCHIVE_NAME" target/bundled/*
+          zip -r "$ARCHIVE_NAME" *
 
       - uses: actions/upload-artifact@v4
         with:
