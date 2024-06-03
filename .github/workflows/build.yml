@@ -100,7 +100,7 @@ jobs:
 
       - uses: montudor/action-zip@v1
         with:
-          args: zip -r "target/bundled/$ARCHIVE_NAME" *
+          args: zip -r "target/bundled/$ARCHIVE_NAME" . -i *
 
       - uses: actions/upload-artifact@v4
         with:
