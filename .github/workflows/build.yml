@@ -94,14 +94,18 @@ jobs:
 
       - name: Create Zip file
         run: |
-          cd target/bundled/
-          cp "../../.github/workflows/readme-${{ runner.os }}.txt" "./README.txt"
-          zip -r "$ARCHIVE_NAME" *
+          # cd target/bundled/
+          cp ".github/workflows/readme-${{ runner.os }}.txt" "target/bundled/README.txt"
+          # zip -r "$ARCHIVE_NAME" *
+
+      - uses: montudor/action-zip@v1
+        with:
+          args: zip -r "target/bundled/$ARCHIVE_NAME" *
 
       - uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.ARCHIVE_NAME }}
-          path: ${{ env.ARCHIVE_NAME }}
+          name: target/bundled/${{ env.ARCHIVE_NAME }}
+          path: target/bundled/${{ env.ARCHIVE_NAME }}
           
   publish:
     name: Publish
