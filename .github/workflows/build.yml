@@ -90,20 +90,19 @@ jobs:
 
       - name: Determine build archive name
         run: |
-          echo "ARCHIVE_NAME=crrshrr-$(git describe --always)-${{ matrix.name }}" >> "$GITHUB_ENV"
+          echo "ARCHIVE_NAME=crrshrr-$(git describe --always)-${{ matrix.name }}.zip" >> "$GITHUB_ENV"
 
-      - name: Move all packaged plugin into a directory
+      - name: Create Zip file
         run: |
           # GitHub Action strips the top level directory, great, have another one
-          mkdir -p "$ARCHIVE_NAME/$ARCHIVE_NAME"
-          mv target/bundled/* "$ARCHIVE_NAME/$ARCHIVE_NAME"
+          cd target/bundled/
+          cp ".github/workflows/readme-${{ runner.os }}.txt" "./README.txt"
+          zip -r "$ARCHIVE_NAME" target/bundled/*
 
-      - name: Add an OS-specific readme file with installation instructions
-        run: cp ".github/workflows/readme-${{ runner.os }}.txt" "$ARCHIVE_NAME/$ARCHIVE_NAME/README.txt"
       - uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.ARCHIVE_NAME }}.zip
-          path: ${{ env.ARCHIVE_NAME }}.zip
+          name: ${{ env.ARCHIVE_NAME }}
+          path: ${{ env.ARCHIVE_NAME }}
           
   publish:
     name: Publish
