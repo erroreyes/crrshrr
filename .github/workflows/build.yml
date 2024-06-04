@@ -100,7 +100,7 @@ jobs:
           mv target/bundled/* "$ARCHIVE_NAME/$ARCHIVE_NAME"
 
       - name: Check content of path
-        run: ls -l --block-size=K
+        run: ls -l
 
       - name: Add an OS-specific readme file with installation instructions
         run: cp ".github/workflows/readme-${{ runner.os }}.txt" "$ARCHIVE_NAME/$ARCHIVE_NAME/README.txt"
@@ -119,7 +119,7 @@ jobs:
         uses: actions/download-artifact@v4
 
       - name: Check content of path
-        run: ls -l
+        run: ls -l --block-size=K
 
       # TODO !!!!!!
       # - uses: montudor/action-zip@v1
