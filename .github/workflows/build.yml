@@ -119,7 +119,7 @@ jobs:
         uses: actions/download-artifact@v4
 
       - name: Check content of path
-        run: ls -l --block-size=K
+        run: ls -l
 
       # TODO !!!!!!
       # - uses: montudor/action-zip@v1
