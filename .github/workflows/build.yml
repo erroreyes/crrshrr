@@ -138,7 +138,7 @@ jobs:
             dir_name="${directory%/}"
 
             # Create a zip archive with the directory name
-            zip -r "${dir_name}.zip" "$dir_name"
+            zip -r -j "${dir_name}.zip" "$dir_name/*"
           done
 
       - name: Check content after zipping
@@ -146,12 +146,14 @@ jobs:
           cd artifacts  
           ls -l --block-size=K **
 
-      # - name: Delete old release assets
-      #   uses: mknejp/delete-release-assets@v1
-      #   with:
-      #     token: ${{ github.token }}
-      #     tag: alpha # This may also be of the form 'refs/tags/staging'
-      #     assets: '*'
+      - name: Delete old release assets
+        uses: mknejp/delete-release-assets@v1
+        with:
+          fail-if-no-assets: false
+          fail-if-no-release: false
+          token: ${{ github.token }}
+          tag: alpha # This may also be of the form 'refs/tags/staging'
+          assets: '*'
 
       - name: Upload release assets
         uses: softprops/action-gh-release@v2
