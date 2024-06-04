@@ -1,3 +1,4 @@
+# build.yaml lifted and modified from https://github.com/robbert-vdh/nih-plug/blob/master/.github/workflows/build.yml
 name: Automated Builds
 
 on:
@@ -90,22 +91,24 @@ jobs:
 
       - name: Determine build archive name
         run: |
-          echo "ARCHIVE_NAME=crrshrr-$(git describe --always)-${{ matrix.name }}.zip" >> "$GITHUB_ENV"
+          echo "ARCHIVE_NAME=crrshrr-$(date -u +"%Y-%m-%d-%H%m%S")-${{ matrix.name }}" >> "$GITHUB_ENV"
 
-      - name: Create Zip file
+      - name: Move all packaged plugin into a directory
         run: |
-          # cd target/bundled/
-          cp ".github/workflows/readme-${{ runner.os }}.txt" "target/bundled/README.txt"
-          # zip -r "$ARCHIVE_NAME" *
+          # GitHub Action strips the top level directory, great, have another one
+          mkdir -p "$ARCHIVE_NAME/$ARCHIVE_NAME"
+          mv target/bundled/* "$ARCHIVE_NAME/$ARCHIVE_NAME"
 
-      - uses: montudor/action-zip@v1
-        with:
-          args: zip -r "target/bundled/$ARCHIVE_NAME" . -i *
+      - name: Check content of path
+        run: ls -l --block-size=K
 
-      - uses: actions/upload-artifact@v4
+      - name: Add an OS-specific readme file with installation instructions
+        run: cp ".github/workflows/readme-${{ runner.os }}.txt" "$ARCHIVE_NAME/$ARCHIVE_NAME/README.txt"
+
+      - uses: actions/upload-artifact@v3
         with:
-          name: target/bundled/${{ env.ARCHIVE_NAME }}
-          path: target/bundled/${{ env.ARCHIVE_NAME }}
+          name: ${{ env.ARCHIVE_NAME }}
+          path: ${{ env.ARCHIVE_NAME }}
           
   publish:
     name: Publish
@@ -114,18 +117,28 @@ jobs:
     steps:
       - name: Download artifacts
         uses: actions/download-artifact@v4
-      - name: Delete old release assets
-        uses: mknejp/delete-release-assets@v1
-        with:
-          token: ${{ github.token }}
-          tag: alpha # This may also be of the form 'refs/tags/staging'
-          assets: '*'
-      - name: Upload release assets
-        uses: softprops/action-gh-release@v2
-        if: startsWith(github.ref, 'refs/tags/')
-        with:
-          # tag_name: alpha
-          # token: ${{ secrets.GITHUB_TOKEN }}
-          prerelease: true
-          files: |
-            */*.zip
+
+      - name: Check content of path
+        run: ls -l --block-size=K
+
+      # TODO !!!!!!
+      # - uses: montudor/action-zip@v1
+      #   with:
+      #     args: zip -r "target/bundled/$ARCHIVE_NAME" . -i target/bundled/*
+
+      # - name: Delete old release assets
+      #   uses: mknejp/delete-release-assets@v1
+      #   with:
+      #     token: ${{ github.token }}
+      #     tag: alpha # This may also be of the form 'refs/tags/staging'
+      #     assets: '*'
+
+      # - name: Upload release assets
+      #   uses: softprops/action-gh-release@v2
+      #   if: startsWith(github.ref, 'refs/tags/')
+      #   with:
+      #     # tag_name: alpha
+      #     # token: ${{ secrets.GITHUB_TOKEN }}
+      #     prerelease: true
+      #     files: |
+      #       */*.zip
