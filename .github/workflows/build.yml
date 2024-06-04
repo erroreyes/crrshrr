@@ -138,7 +138,7 @@ jobs:
             dir_name="${directory%/}"
 
             # Create a zip archive with the directory name
-            zip -r -j '${dir_name}.zip' '$dir_name/**'
+            zip -r "${dir_name}.zip" "$dir_name/*"
           done
 
       - name: Check content after zipping
