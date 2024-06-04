@@ -117,17 +117,31 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Fetch all git history
+        run: git fetch --force --prune --tags --unshallow
+
       - uses: actions/download-artifact@v4
         with:
           path: artifacts
 
       - name: Check content of path
-        run: ls -l --block-size=K ./artifacts/**
+        run: |
+          cd artifacts
+          ls -l --block-size=K **
 
-      # TODO !!!!!!
-      # - uses: montudor/action-zip@v1
-      #   with:
-      #     args: zip -r "target/bundled/$ARCHIVE_NAME" . -i target/bundled/*
+      - name: Zip up the artifact directories
+        run: |
+          # Loop through each subdirectory
+          for directory in */ ; do
+            # Remove the trailing slash from the directory name
+            dir_name="${directory%/}"
+
+            # Create a zip archive with the directory name
+            zip -r "${dir_name}.zip" "$dir_name"
+          done
+
+      - name: Check content after zipping
+        run: ls -l --block-size=K **
 
       # - name: Delete old release assets
       #   uses: mknejp/delete-release-assets@v1
@@ -136,12 +150,12 @@ jobs:
       #     tag: alpha # This may also be of the form 'refs/tags/staging'
       #     assets: '*'
 
-      # - name: Upload release assets
-      #   uses: softprops/action-gh-release@v2
-      #   if: startsWith(github.ref, 'refs/tags/')
-      #   with:
-      #     # tag_name: alpha
-      #     # token: ${{ secrets.GITHUB_TOKEN }}
-      #     prerelease: true
-      #     files: |
-      #       */*.zip
+      - name: Upload release assets
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          tag_name: alpha
+          token: ${{ secrets.GITHUB_TOKEN }}
+          prerelease: true
+          files: |
+            */*.zip
