@@ -131,6 +131,7 @@ jobs:
 
       - name: Zip up the artifact directories
         run: |
+          cd artifacts
           # Loop through each subdirectory
           for directory in */ ; do
             # Remove the trailing slash from the directory name
@@ -141,7 +142,9 @@ jobs:
           done
 
       - name: Check content after zipping
-        run: ls -l --block-size=K **
+        run: |
+          cd artifacts  
+          ls -l --block-size=K **
 
       # - name: Delete old release assets
       #   uses: mknejp/delete-release-assets@v1
@@ -158,4 +161,4 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           prerelease: true
           files: |
-            */*.zip
+            artifacts/*.zip
