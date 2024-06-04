@@ -122,7 +122,7 @@ jobs:
           path: artifacts
 
       - name: Check content of path
-        run: ls -l --block-size=K
+        run: ls -l --block-size=K ./artifacts/**
 
       # TODO !!!!!!
       # - uses: montudor/action-zip@v1
